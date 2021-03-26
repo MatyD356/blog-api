@@ -1,8 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const postsRouter = require('./routes/posts');
+const commentsRouter = require('./routes/comments');
 
 const app = express();
+
+//routes
+app.use('/posts', postsRouter);
+app.use('/comments', commentsRouter);
 
 //conectiong to DB
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
