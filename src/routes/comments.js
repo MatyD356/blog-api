@@ -1,13 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const commentsController = require('../controllers/commentsController');
 
-router.get('/', (req, res) => {
-  //get all comments from db
-  res.json({ comments: 'comments' })
-});
+router.get('/', commentsController.list_post);
 
-router.get('/:id', (req, res) => {
-  res.json({ comment: `comment ${req.params.id}` })
-})
+router.get('/:id', commentsController.get_comment);
 
 module.exports = router;

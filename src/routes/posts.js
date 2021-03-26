@@ -1,19 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const postsController = require('../controllers/postsController');
 
-router.get('/', (req, res) => {
-  //get all posts in db and send
-  res.json({ username: 'posts' });
-});
+router.get('/', postsController.list_posts);
 
-router.get('/:id', (req, res) => {
-  //get one post and send
-  res.json({ username: `post ${req.params.id}` });
-});
+router.get('/:id', postsController.get_post);
 
-router.post('/new', (req, res) => {
-  //create new post
-  res.json({ username: 'new post' });
-});
+router.post('/new', postsController.new_post);
 
 module.exports = router;
