@@ -3,8 +3,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const postsRouter = require('./routes/posts');
 const commentsRouter = require('./routes/comments');
+var bodyParser = require('body-parser')
 
 const app = express();
+
+app.use(express.urlencoded({
+  extended: false
+}));
+app.use(express.json());
+
 
 //routes
 app.use('/posts', postsRouter);
