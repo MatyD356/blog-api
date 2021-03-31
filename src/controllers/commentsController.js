@@ -1,17 +1,18 @@
 const Comment = require('../models/comment');
+const { body, validationResult } = require('express-validator');
 
-const { body, validate, validationResult } = require('express-validator');
 //get all comments from db
 exports.list_post = (req, res) => {
   Comment.find(function (err, comments) {
     if (err) { return next(err) }
-    console.log(comments)
     res.json({ comments })
   })
 }
 //get particular commment from db
 exports.get_comment = (req, res) => {
-  res.json({ comment: `comment ${req.params.id}` })
+  Comment.findById(req.params.id, function (err, comment) {
+    res.json({ comment })
+  })
 }
 //add coment to db
 exports.add_comment = [

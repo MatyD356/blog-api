@@ -1,14 +1,41 @@
+const Post = require('../models/post');
+const { body, validationResult } = require('express-validator');
+
+//get all posts in db and send
 exports.list_posts = (req, res) => {
-  //get all posts in db and send
-  res.json({ posts: 'posts' });
+  Post.find(function (err, posts) {
+    if (err) { return next(err) }
+    res.json({ posts });
+  })
 };
 
+//get one post and send
 exports.get_post = (req, res) => {
-  //get one post and send
-  res.json({ username: `post ${req.params.id}` });
+  Post.findById(req.params.id, function (err, post) {
+    if (err) { return next(err) }
+    res.json({ post });
+  })
 }
 
-exports.new_post = (req, res) => {
-  //create new post
-  res.json({ username: 'new post' });
-}
+//create new post
+exports.new_post = [
+  body('title', 'Add a title').trim().isLength({ min: 1 }).escape(),
+  body('message', 'Add comment body').trim().isLength({ min: 1 }).escape(),
+  // body('author', 'Add comment author name').trim().isLength({ min: 1 }).escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json({ errors: errors.array() });
+    } else {
+      const postDraft = new Post({
+        title: req.body.title,
+        body: req.body.message,
+        author: req.body.author,
+        isPublic: req.body.isPublic,
+      })
+      postDraft.save(function (err) {
+        if (err) { return next(err) }
+        res.json({ username: 'new post' });
+      })
+    }
+  }]
