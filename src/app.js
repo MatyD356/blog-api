@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const postsRouter = require('./routes/posts');
 const commentsRouter = require('./routes/comments');
+const userRouter = require('./routes/user');
 var bodyParser = require('body-parser')
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.urlencoded({
 app.use(express.json());
 
 //routes
+app.use('/user', userRouter);
 app.use('/posts', postsRouter);
 app.use('/comments', commentsRouter);
 
