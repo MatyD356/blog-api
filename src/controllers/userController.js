@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 const { body, validationResult } = require('express-validator');
 
@@ -10,14 +11,23 @@ exports.new_user = [
     if (!errors.isEmpty()) {
       res.json({ errors: errors.array() });
     } else {
-      const userDraft = new User({
-        username: req.body.username,
-        password: req.body.password,
-        type: 'admin',
-      })
-      userDraft.save(function (err) {
+      User.findOne({ username: req.body.username }).exec(function (err, user) {
         if (err) { return next(err) }
-        res.json({ username: 'new user' })
+        if (user) {
+          return res.json({ errors: 'username taken' })
+        } else {
+          bcrypt.hash(req.body.password, 10, ((err, hashedPassword) => {
+            const userDraft = new User({
+              username: req.body.username,
+              password: hashedPassword,
+              type: 'admin',
+            })
+            userDraft.save(function (err) {
+              if (err) { return next(err) }
+              res.json({ username: 'new user created' })
+            })
+          }))
+        }
       })
     }
   }
