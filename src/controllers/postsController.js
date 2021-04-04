@@ -1,5 +1,6 @@
 const Post = require('../models/post');
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken')
 
 //get all posts in db and send
 exports.list_posts = (req, res) => {
@@ -23,19 +24,29 @@ exports.new_post = [
   body('message', 'Add comment body').trim().isLength({ min: 1 }).escape(),
   // body('author', 'Add comment author name').trim().isLength({ min: 1 }).escape(),
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.json({ errors: errors.array() });
-    } else {
-      const postDraft = new Post({
-        title: req.body.title,
-        body: req.body.message,
-        author: req.body.author,
-        isPublic: req.body.isPublic,
-      })
-      postDraft.save(function (err) {
-        if (err) { return next(err) }
-        res.json({ username: 'new post' });
-      })
-    }
+    jwt.verify(req.token, 'secret', (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          res.json({ errors: errors.array() });
+        } else {
+          const postDraft = new Post({
+            title: req.body.title,
+            body: req.body.message,
+            author: authData.user,
+            isPublic: true,
+          })
+          postDraft.save(function (err) {
+            if (err) { return next(err) }
+            res.json({
+              username: 'new post',
+              authData
+            });
+          })
+        }
+      }
+    })
   }]

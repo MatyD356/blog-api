@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 const { body, validationResult } = require('express-validator');
 
@@ -32,3 +33,14 @@ exports.new_user = [
     }
   }
 ]
+
+exports.login_user = (req, res) => {
+  User.findOne({ username: req.body.username }).exec(function (err, user) {
+    if (err) { return next(err) }
+    jwt.sign({ user }, 'secret', (err, token) => {
+      res.json({
+        token
+      })
+    })
+  })
+}
