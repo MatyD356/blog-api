@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
+const passport = require('passport');
 
 const { body, validationResult } = require('express-validator');
 
@@ -34,13 +35,21 @@ exports.new_user = [
   }
 ]
 
-exports.login_user = (req, res) => {
-  User.findOne({ username: req.body.username }).exec(function (err, user) {
-    if (err) { return next(err) }
-    jwt.sign({ user }, 'secret', (err, token) => {
-      res.json({
-        token
-      })
-    })
-  })
+exports.login_user = (req, res, next) => {
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    if (err || !user) {
+      return res.status(400).json({
+        message: 'Something is not right',
+        user: user,
+        info,
+      });
+    }
+    req.login(user, { session: false }, (err) => {
+      if (err) {
+        res.send(err);
+      }
+      const token = jwt.sign(user.toJSON(), 'secret');
+      return res.json({ user, token });
+    });
+  })(req, res);
 }

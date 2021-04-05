@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const postsRouter = require('./routes/posts');
 const commentsRouter = require('./routes/comments');
 const userRouter = require('./routes/user');
-var bodyParser = require('body-parser')
+require('./passport');
 
 const app = express();
 
