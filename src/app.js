@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const postsRouter = require('./routes/posts');
 const commentsRouter = require('./routes/comments');
 const userRouter = require('./routes/user');
+const cors = require('cors')
 require('./passport');
 
 const app = express();
@@ -13,7 +14,7 @@ app.use(express.urlencoded({
   extended: false
 }));
 app.use(express.json());
-
+app.use(cors({ origin: 'http://localhost:3000' }));
 //routes
 app.use('/user', userRouter);
 app.use('/posts', postsRouter);
